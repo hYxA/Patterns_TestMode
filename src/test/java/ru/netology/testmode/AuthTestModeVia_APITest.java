@@ -8,9 +8,14 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import ru.netology.data.DataGenerator;
 
 import static com.codeborne.selenide.Selenide.open;
 import static io.restassured.RestAssured.given;
+import static ru.netology.data.DataGenerator.Registration.getRegisteredUser;
+import static ru.netology.data.DataGenerator.Registration.getUser;
+import static ru.netology.data.DataGenerator.getRandomLogin;
+import static ru.netology.data.DataGenerator.getRandomPassword;
 
 /**
  * Для активации этого тестового режима при запуске SUT
@@ -20,8 +25,8 @@ import static io.restassured.RestAssured.given;
 
 public class AuthTestModeVia_APITest {
     // спецификация нужна для того, чтобы переиспользовать настройки в разных запросах
-    class AuthTest {
-        private static RequestSpecification requestSpec = new RequestSpecBuilder()
+    static class AuthTest {
+        private static final RequestSpecification requestSpec = new RequestSpecBuilder()
                 .setBaseUri("http://localhost")
                 .setPort(9999)
                 .setAccept(ContentType.JSON)
@@ -34,7 +39,7 @@ public class AuthTestModeVia_APITest {
             // сам запрос
             given() // "дано"
                     .spec(requestSpec) // указываем, какую спецификацию используем
-                    .body(new RegistrationDto("vasya", "password", "active")) // передаём в теле объект, который будет преобразован в JSON
+                    .body(new DataGenerator.RegistrationDto("vasya", "password", "active")) // передаём в теле объект, который будет преобразован в JSON
                     .when() // "когда"
                     .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
                     .then() // "тогда ожидаем"
@@ -92,4 +97,4 @@ public class AuthTestModeVia_APITest {
         //  "Пароль" - переменную wrongPassword
     }
 }
-}
+
