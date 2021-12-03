@@ -4,10 +4,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ru.netology.data.DataGenerator;
 
 import static com.codeborne.selenide.Selenide.open;
@@ -24,27 +21,32 @@ import static ru.netology.data.DataGenerator.getRandomPassword;
  **/
 
 public class AuthTestModeVia_APITest {
-    // спецификация нужна для того, чтобы переиспользовать настройки в разных запросах
-    static class AuthTest {
-        private static final RequestSpecification requestSpec = new RequestSpecBuilder()
-                .setBaseUri("http://localhost")
-                .setPort(9999)
-                .setAccept(ContentType.JSON)
-                .setContentType(ContentType.JSON)
-                .log(LogDetail.ALL)
-                .build();
+    static String login = getRandomLogin();
+    static String password = getRandomPassword();
+    static String status = "active";
 
-        @BeforeAll
-        static void setUpAll() {
-            // сам запрос
-            given() // "дано"
-                    .spec(requestSpec) // указываем, какую спецификацию используем
-                    .body(new DataGenerator.RegistrationDto("vasya", "password", "active")) // передаём в теле объект, который будет преобразован в JSON
-                    .when() // "когда"
-                    .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                    .then() // "тогда ожидаем"
-                    .statusCode(200); // код 200 OK
-        }
+    /**
+     * спецификация нужна для того, чтобы переиспользовать настройки в разных запросах
+     **/
+
+    private static final RequestSpecification requestSpec = new RequestSpecBuilder()
+            .setBaseUri("http://localhost")
+            .setPort(9999)
+            .setAccept(ContentType.JSON)
+            .setContentType(ContentType.JSON)
+            .log(LogDetail.ALL)
+            .build();
+
+    @BeforeAll
+    static void setUpAll() {
+        // сам запрос
+        given() // "дано"
+                .spec(requestSpec) // указываем, какую спецификацию используем
+                .body(new DataGenerator.RegistrationDto("vasya", "password", "active")) // передаём в теле объект, который будет преобразован в JSON
+                .when() // "когда"
+                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
+                .then() // "тогда ожидаем"
+                .statusCode(200); // код 200 OK
     }
 
     @BeforeEach
@@ -96,5 +98,14 @@ public class AuthTestModeVia_APITest {
         //  паролем, для заполнения поля формы "Логин" используйте пользователя registeredUser,
         //  "Пароль" - переменную wrongPassword
     }
+
+    @AfterAll
+    @DisplayName("Display all data")
+    static void printData() {
+        System.out.println(login);
+        System.out.println(password);
+        System.out.println(status);
+    }
+
 }
 
