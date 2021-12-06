@@ -1,12 +1,9 @@
 package ru.netology.testmode;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.netology.data.RegistrationDto;
 
-import static com.codeborne.selenide.Selenide.open;
 import static io.restassured.RestAssured.given;
 import static ru.netology.data.DataGenerator.genValidActiveUser;
 import static ru.netology.data.DataGenerator.requestSpec;
