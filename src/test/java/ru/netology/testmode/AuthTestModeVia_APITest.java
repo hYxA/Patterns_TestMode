@@ -49,16 +49,27 @@ public class AuthTestModeVia_APITest {
                 .then()
                 .statusCode(200);
     }
-}
-//
-//    @Test
-//    @DisplayName("Should get error message if login with blocked registered user")
-//    void shouldGetErrorIfBlockedUser() {
-//        var blockedUser = getRegisteredUser("blocked");
-//        // TODO: добавить логику теста в рамках которого будет выполнена попытка входа в личный кабинет,
-//        //  заблокированного пользователя, для заполнения полей формы используйте пользователя blockedUser
-//    }
-//
+
+
+    @Test
+    @DisplayName("Should get error message if login with blocked registered user")
+    void shouldGetErrorIfBlockedUser() {
+        RegistrationDto blockedUser = genValidBlockedUser();
+        given() // "дано"
+                .spec(requestSpec)
+                .body(new RegistrationDto(
+                        blockedUser.getLogin(),
+                        blockedUser.getPassword(),
+                        "blocked"))
+                .when()
+                .post("/api/system/users")
+                .then()
+                .statusCode(200);
+    }
+        // TODO: добавить логику теста в рамках которого будет выполнена попытка входа в личный кабинет,
+        //  заблокированного пользователя, для заполнения полей формы используйте пользователя blockedUser
+    }
+
 //    @Test
 //    @DisplayName("Should get error message if login with wrong login")
 //    void shouldGetErrorIfWrongLogin() {
