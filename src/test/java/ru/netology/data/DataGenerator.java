@@ -5,19 +5,18 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
-import lombok.Value;
-import org.junit.jupiter.api.BeforeAll;
 
 import java.util.Locale;
 
 import static io.restassured.RestAssured.given;
 
 public class DataGenerator {
+    private static final Faker faker = new Faker(new Locale("en"));
 
     /**
      * спецификация нужна для того, чтобы переиспользовать настройки в разных запросах
      **/
-    private static RequestSpecification requestSpec = new RequestSpecBuilder()
+    public static final RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
             .setAccept(ContentType.JSON)
@@ -25,60 +24,58 @@ public class DataGenerator {
             .log(LogDetail.ALL)
             .build();
 
-    @BeforeAll
-    static void setUpAll() {
-        // сам запрос
-        given() // "дано"
-                .spec(requestSpec) // указываем, какую спецификацию используем
-                .body(new RegistrationDto("vasya", "password", "active")) // передаём в теле объект, который будет преобразован в JSON
-                .when() // "когда"
-                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
-                .then() // "тогда ожидаем"
-                .statusCode(200); // код 200 OK
+    static void RegistrationUser(RegistrationDto regDto) {
+        given()
+                .spec(requestSpec)
+                .body(regDto)
+                .when()
+                .post("/api/system/users")
+                .then()
+                .statusCode(200);
+    }
+    public static RegistrationDto genValidActiveUser() {
+        Faker faker = new Faker(new Locale("en"));
+        RegistrationDto validUser = new RegistrationDto(
+                faker.name().username().toLowerCase(),
+                faker.internet().password(),
+                "active"
+        );
+        RegistrationUser(validUser);
+        return validUser;
+    }
+    public static RegistrationDto genValidBlockedUser() {
+        Faker faker = new Faker(new Locale("en"));
+        RegistrationDto blockedUser = new RegistrationDto(
+                faker.name().username().toLowerCase(),
+                faker.internet().password(),
+                "blocked"
+        );
+        RegistrationUser(blockedUser);
+        return blockedUser;
     }
 
-    private static final Faker faker = new Faker(new Locale("en"));
-    static String password;
-    static String login;
-
-    private DataGenerator() {
+    public static RegistrationDto genInvalidLogin() {
+        Faker faker = new Faker(new Locale("en"));
+        String password = faker.internet().password();
+        RegistrationDto invalidLogin = new RegistrationDto(
+                "username",
+                password,
+                "active"
+        );
+        RegistrationUser(invalidLogin);
+        return new RegistrationDto("badLogin", password, "active");
     }
 
-    private static void sendRequest(RegistrationDto user) {
-        // TODO: отправить запрос на указанный в требованиях path, передав в body запроса объект user
-        //  и не забудьте передать подготовленную спецификацию requestSpec.
-        //  Пример реализации метода показан в условии к задаче.
-    }
-
-    public static String getRandomLogin() {
-        // TODO: добавить логику для объявления переменной login и задания её значения, для генерации
-        //  случайного логина используйте faker
-        return login;
-    }
-
-    public static String getRandomPassword() {
-        // TODO: добавить логику для объявления переменной password и задания её значения, для генерации
-        //  случайного пароля используйте faker
-        return password;
-    }
-
-    public static class Registration {
-        static RegistrationDto registeredUser;
-        static RegistrationDto user;
-
-        private Registration() {
-        }
-
-        public static RegistrationDto getUser(String status) {
-            // TODO: создать пользователя user используя методы getRandomLogin(), getRandomPassword() и параметр status
-            return user;
-        }
-
-        public static RegistrationDto getRegisteredUser(String status) {
-            // TODO: объявить переменную registeredUser и присвоить ей значение возвращённое getUser(status).
-            // Послать запрос на регистрацию пользователя с помощью вызова sendRequest(registeredUser)
-            return registeredUser;
-        }
+    public static RegistrationDto genBadPassword() {
+        Faker faker = new Faker(new Locale("en"));
+        String userName = faker.name().username().toLowerCase();
+        RegistrationDto badPassword = new RegistrationDto(
+                userName,
+                "correctPassword",
+                "active"
+        );
+        RegistrationUser(badPassword);
+        return new RegistrationDto(userName, "badPassword", "active");
     }
 
 
