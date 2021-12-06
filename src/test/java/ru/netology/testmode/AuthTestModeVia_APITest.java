@@ -5,8 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.netology.data.RegistrationDto;
 
 import static io.restassured.RestAssured.given;
-import static ru.netology.data.DataGenerator.genValidActiveUser;
-import static ru.netology.data.DataGenerator.requestSpec;
+import static ru.netology.data.DataGenerator.*;
 
 /**
  * Для активации этого тестового режима при запуске SUT
@@ -34,13 +33,23 @@ public class AuthTestModeVia_APITest {
     }
 
 
-    //    @Test
-//    @DisplayName("Should get error message if login with not registered user")
-//    void shouldGetErrorIfNotRegisteredUser() {
-//        var notRegisteredUser = getNotRegisteredUser("active");
-//        // TODO: добавить логику теста в рамках которого будет выполнена попытка входа в личный кабинет
-//        //  незарегистрированного пользователя, для заполнения полей формы используйте пользователя notRegisteredUser
-//    }
+    @Test
+    @DisplayName("Should get error message if login with not registered user")
+    void shouldGetErrorIfNotRegisteredUser() {
+        RegistrationDto notRegisteredUser = genInvalidLogin();
+
+        given() // "дано"
+                .spec(requestSpec)
+                .body(new RegistrationDto(
+                        notRegisteredUser.getLogin(),
+                        notRegisteredUser.getPassword(),
+                        "active"))
+                .when()
+                .post("/api/system/users")
+                .then()
+                .statusCode(200);
+    }
+}
 //
 //    @Test
 //    @DisplayName("Should get error message if login with blocked registered user")
@@ -70,5 +79,5 @@ public class AuthTestModeVia_APITest {
 //        //  "Пароль" - переменную wrongPassword
 //    }
 //
-}
+
 
