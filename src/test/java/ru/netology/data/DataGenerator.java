@@ -10,6 +10,10 @@ import lombok.Value;
 import java.util.Locale;
 
 public class DataGenerator {
+
+    /**
+     * спецификация нужна для того, чтобы переиспользовать настройки в разных запросах
+     **/
     private static final RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
