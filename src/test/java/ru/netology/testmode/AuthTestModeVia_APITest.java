@@ -84,19 +84,25 @@ public class AuthTestModeVia_APITest {
                 .post("/api/system/users")
                 .then()
                 .statusCode(200);
-        // TODO: добавить логику теста в рамках которого будет выполнена попытка входа в личный кабинет с неверным
-        //  логином, для заполнения поля формы "Логин" используйте переменную wrongLogin,
-        //  "Пароль" - пользователя registeredUser
     }
-//
-//    @Test
-//    @DisplayName("Should get error message if login with wrong password")
-//    void shouldGetErrorIfWrongPassword() {
-//        var registeredUser = getRegisteredUser("active");
-//        var wrongPassword = getRandomPassword();
-//        // TODO: добавить логику теста в рамках которого будет выполнена попытка входа в личный кабинет с неверным
-//        //  паролем, для заполнения поля формы "Логин" используйте пользователя registeredUser,
-//        //  "Пароль" - переменную wrongPassword
+
+    @Test
+    @DisplayName("Should get error message if login with wrong password")
+    void shouldGetErrorIfWrongPassword() {
+        RegistrationDto registeredUser = genValidActiveUser();
+        String wrongPassword = faker.internet().password();
+
+        given() // "дано"
+                .spec(requestSpec)
+                .body(new RegistrationDto(
+                        registeredUser.getLogin(),
+                        wrongPassword,
+                        "active"))
+                .when()
+                .post("/api/system/users")
+                .then()
+                .statusCode(200);
+    }
 }
 
 
