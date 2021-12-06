@@ -55,6 +55,7 @@ public class AuthTestModeVia_APITest {
     @DisplayName("Should get error message if login with blocked registered user")
     void shouldGetErrorIfBlockedUser() {
         RegistrationDto blockedUser = genValidBlockedUser();
+
         given() // "дано"
                 .spec(requestSpec)
                 .body(new RegistrationDto(
@@ -66,19 +67,27 @@ public class AuthTestModeVia_APITest {
                 .then()
                 .statusCode(200);
     }
-        // TODO: добавить логику теста в рамках которого будет выполнена попытка входа в личный кабинет,
-        //  заблокированного пользователя, для заполнения полей формы используйте пользователя blockedUser
-    }
 
-//    @Test
-//    @DisplayName("Should get error message if login with wrong login")
-//    void shouldGetErrorIfWrongLogin() {
-//        var registeredUser = getRegisteredUser("active");
-//        var wrongLogin = getRandomLogin();
-//        // TODO: добавить логику теста в рамках которого будет выполнена попытка входа в личный кабинет с неверным
-//        //  логином, для заполнения поля формы "Логин" используйте переменную wrongLogin,
-//        //  "Пароль" - пользователя registeredUser
-//    }
+    @Test
+    @DisplayName("Should get error message if login with wrong login")
+    void shouldGetErrorIfWrongLogin() {
+        RegistrationDto registeredUser = genValidActiveUser();
+        String wrongLogin = faker.name().username();
+
+        given() // "дано"
+                .spec(requestSpec)
+                .body(new RegistrationDto(
+                        wrongLogin,
+                        registeredUser.getPassword(),
+                        "active"))
+                .when()
+                .post("/api/system/users")
+                .then()
+                .statusCode(200);
+        // TODO: добавить логику теста в рамках которого будет выполнена попытка входа в личный кабинет с неверным
+        //  логином, для заполнения поля формы "Логин" используйте переменную wrongLogin,
+        //  "Пароль" - пользователя registeredUser
+    }
 //
 //    @Test
 //    @DisplayName("Should get error message if login with wrong password")
@@ -88,7 +97,7 @@ public class AuthTestModeVia_APITest {
 //        // TODO: добавить логику теста в рамках которого будет выполнена попытка входа в личный кабинет с неверным
 //        //  паролем, для заполнения поля формы "Логин" используйте пользователя registeredUser,
 //        //  "Пароль" - переменную wrongPassword
-//    }
-//
+}
+
 
 
