@@ -6,15 +6,18 @@ import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import lombok.Value;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.util.Locale;
+
+import static io.restassured.RestAssured.given;
 
 public class DataGenerator {
 
     /**
      * спецификация нужна для того, чтобы переиспользовать настройки в разных запросах
      **/
-    private static final RequestSpecification requestSpec = new RequestSpecBuilder()
+    private static RequestSpecification requestSpec = new RequestSpecBuilder()
             .setBaseUri("http://localhost")
             .setPort(9999)
             .setAccept(ContentType.JSON)
@@ -22,6 +25,17 @@ public class DataGenerator {
             .log(LogDetail.ALL)
             .build();
 
+    @BeforeAll
+    static void setUpAll() {
+        // сам запрос
+        given() // "дано"
+                .spec(requestSpec) // указываем, какую спецификацию используем
+                .body(new RegistrationDto("vasya", "password", "active")) // передаём в теле объект, который будет преобразован в JSON
+                .when() // "когда"
+                .post("/api/system/users") // на какой путь, относительно BaseUri отправляем запрос
+                .then() // "тогда ожидаем"
+                .statusCode(200); // код 200 OK
+    }
 
     private static final Faker faker = new Faker(new Locale("en"));
     static String password;
@@ -67,10 +81,5 @@ public class DataGenerator {
         }
     }
 
-    @Value
-    public static class RegistrationDto {
-        String login;
-        String password;
-        String status;
-    }
+
 }
